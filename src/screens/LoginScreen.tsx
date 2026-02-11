@@ -9,8 +9,12 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  StatusBar,
+  Dimensions,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+
+const { width, height } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -35,65 +39,108 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white"
-    >
-      <View className="flex-1 justify-center px-8">
-        {/* Logo */}
-        <View className="items-center mb-12">
-          <View className="w-48 h-24 bg-gray-200 rounded-lg items-center justify-center mb-4">
-            <Text className="text-2xl font-bold text-primary">STEP</Text>
+    <View className="flex-1 bg-white">
+      <StatusBar barStyle="light-content" />
+      
+      {/* Top Header Background */}
+      <View 
+        className="bg-primary absolute top-0 left-0 right-0 h-[45%] rounded-b-[40px]" 
+        style={{ backgroundColor: '#1e3a8a' }}
+      />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <View className="flex-1 justify-center px-6">
+          
+          {/* Logo & Welcome Section */}
+          <View className="items-center mb-8">
+            <View className="w-32 h-32 bg-white rounded-3xl items-center justify-center shadow-2xl mb-6 border border-gray-100">
+              <Image 
+                source={require('../../assets/STEP.png')} 
+                className="w-24 h-24"
+                resizeMode="contain"
+              />
+            </View>
+            <Text className="text-white text-3xl font-black tracking-tight">Welcome Back</Text>
+            <Text className="text-blue-100 text-sm mt-1 font-medium italic opacity-80">
+              Sign in to manage your education
+            </Text>
           </View>
-          <Text className="text-2xl font-bold text-gray-800">Student Portal</Text>
-          <Text className="text-sm text-gray-500 mt-2">Sign in to continue</Text>
+
+          {/* Login Card */}
+          <View className="bg-white rounded-[32px] p-8 shadow-2xl border border-gray-50">
+            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-[2px] mb-6">Credential Details</Text>
+            
+            {/* Email Field */}
+            <View className="mb-4">
+              <View className="flex-row items-center bg-gray-50 border border-gray-100 rounded-2xl px-4 py-1">
+                 <Text className="text-lg mr-3">📧</Text>
+                 <TextInput
+                  className="flex-1 h-12 text-slate-900 font-semibold"
+                  placeholder="Email Address"
+                  placeholderTextColor="#94a3b8"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
+
+            {/* Password Field */}
+            <View className="mb-8">
+              <View className="flex-row items-center bg-gray-50 border border-gray-100 rounded-2xl px-4 py-1">
+                 <Text className="text-lg mr-3">🔒</Text>
+                 <TextInput
+                  className="flex-1 h-12 text-slate-900 font-semibold"
+                  placeholder="Password"
+                  placeholderTextColor="#94a3b8"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  editable={!isLoading}
+                />
+              </View>
+              <TouchableOpacity className="mt-3 items-end">
+                <Text className="text-primary text-[11px] font-bold">Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Sign In Button */}
+            <TouchableOpacity
+              className={`rounded-2xl py-4 items-center shadow-lg ${isLoading ? 'bg-blue-400' : 'bg-primary'}`}
+              style={{ backgroundColor: isLoading ? '#60a5fa' : '#1e3a8a' }}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <View className="flex-row items-center">
+                  <Text className="text-white font-black text-lg mr-2 uppercase tracking-wider">Sign In</Text>
+                  <Text className="text-white text-lg">🚀</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Footer Branding */}
+          <View className="mt-8 items-center">
+             <Text className="text-gray-400 text-[10px] font-bold tracking-widest uppercase">
+               STEP Education Center
+             </Text>
+             <View className="flex-row mt-1">
+                <View className="h-1 w-8 bg-blue-100 rounded-full mx-1" />
+                <View className="h-1 w-2 bg-blue-500 rounded-full mx-1" />
+                <View className="h-1 w-1 bg-blue-300 rounded-full mx-1" />
+             </View>
+          </View>
+
         </View>
-
-        {/* Email Input */}
-        <View className="mb-4">
-          <Text className="text-sm font-semibold text-gray-700 mb-2">Email</Text>
-          <TextInput
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base"
-            placeholder="student@stepacademy.edu"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            editable={!isLoading}
-          />
-        </View>
-
-        {/* Password Input */}
-        <View className="mb-6">
-          <Text className="text-sm font-semibold text-gray-700 mb-2">Password</Text>
-          <TextInput
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            editable={!isLoading}
-          />
-        </View>
-
-        {/* Login Button */}
-        <TouchableOpacity
-          className={`bg-primary rounded-xl py-4 items-center ${isLoading ? 'opacity-50' : ''}`}
-          onPress={handleLogin}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-white font-bold text-base">Sign In</Text>
-          )}
-        </TouchableOpacity>
-
-        {/* Footer */}
-        <Text className="text-center text-gray-400 text-xs mt-8">
-          STEP Education Center © 2026
-        </Text>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

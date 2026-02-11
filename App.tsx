@@ -15,14 +15,17 @@ import CoursesScreen from './src/screens/CoursesScreen';
 import AssignmentsScreen from './src/screens/AssignmentsScreen';
 import InvoicesScreen from './src/screens/InvoicesScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import CourseDetailScreen from './src/screens/CourseDetailScreen';
 
 // Components
 import BakongPaymentModal from './src/components/BakongPaymentModal';
 
+import { Ionicons } from '@expo/vector-icons';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function TabNavigator() {
+function TabNavigator({ navigation, route }: any) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -30,13 +33,16 @@ function TabNavigator() {
         tabBarActiveTintColor: '#1e3a8a',
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 60,
+          paddingBottom: 10,
+          paddingTop: 10,
+          height: 65,
+          borderTopWidth: 1,
+          borderTopColor: '#f3f4f6',
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
+          fontSize: 10,
+          fontWeight: '700',
+          marginTop: 2,
         },
       }}
     >
@@ -44,42 +50,52 @@ function TabNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>🏠</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="Courses"
         component={CoursesScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>📚</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="Assignments"
         component={AssignmentsScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>📝</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="clipboard-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="Invoices"
         component={InvoicesScreenWrapper}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>💰</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="card-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 24 }}>👤</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
   );
 }
 
-function InvoicesScreenWrapper() {
+function InvoicesScreenWrapper({ navigation }: any) {
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
@@ -89,15 +105,10 @@ function InvoicesScreenWrapper() {
   };
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <InvoicesScreen
-        navigation={{
-          navigate: (screen: string, params: any) => {
-            if (screen === 'BakongPayment') {
-              handlePayment(params.invoice);
-            }
-          },
-        }}
+        navigation={navigation}
+        onPaymentRequest={handlePayment}
       />
       <BakongPaymentModal
         visible={paymentModalVisible}
@@ -107,13 +118,12 @@ function InvoicesScreenWrapper() {
           setSelectedInvoice(null);
         }}
       />
-    </>
+    </View>
   );
 }
 
 function Navigation() {
   const { isAuthenticated, isLoading } = useAuth();
-  const { expoPushToken } = usePushNotifications();
 
   if (isLoading) {
     return (
@@ -129,7 +139,10 @@ function Navigation() {
         {!isAuthenticated ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
-          <Stack.Screen name="Main" component={TabNavigator} />
+          <>
+            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen name="CourseDetail" component={CourseDetailScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
